@@ -1,0 +1,6 @@
+* Common Lisp OO Resource Machine
+
+This code demonstrates compiling CL objects to resources.
+
+This code is not intended to be specs compliant, but strategies to
+make it specs compliant however are known
