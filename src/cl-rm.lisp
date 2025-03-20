@@ -92,6 +92,10 @@
 ;;;                                 Instances                                   #
 ;;; #############################################################################
 
+(cl-rm.utils:define-generic-print resource)
+(cl-rm.utils:define-generic-print instance)
+(cl-rm.utils:define-generic-print compliance-unit)
+
 (defmethod obj->resource ((x standard-object))
   (let ((class (class-of x)))
     (make-instance
