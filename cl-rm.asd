@@ -14,7 +14,8 @@
     :serial t
     :description "RM user code"
     :components ((:file package)
-                 (:file numbers)))))
+                 (:file numbers))))
+    :in-order-to ((asdf:test-op (asdf:test-op :cl-rm/test))))
 
 (asdf:defsystem :cl-rm/test
   :depends-on (:cl-rm :parachute)
