@@ -1,7 +1,7 @@
 (defpackage #:cl-rm.test
   (:export :run-tests :run-tests-error)
   (:shadow :delete)
-  (:use :cl-rm :common-lisp :parachute))
+  (:use :cl-rm :cl-rm.user :common-lisp :parachute))
 
 (in-package #:cl-rm.test)
 

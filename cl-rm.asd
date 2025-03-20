@@ -13,7 +13,8 @@
    (:module user
     :serial t
     :description "RM user code"
-    :components ((:file package)))))
+    :components ((:file package)
+                 (:file numbers)))))
 
 (asdf:defsystem :cl-rm/test
   :depends-on (:cl-rm :parachute)
@@ -22,6 +23,7 @@
   :serial t
   :components
   ((:file package)
-   (:file run-tests))
+   (:file run-tests)
+   (:file numbers))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :cl-rm.test :run-tests-error)))
