@@ -41,7 +41,7 @@
 ;; Our instance is a rough approximation of a proving context for an
 ;; individual resource... This not completely accurate
 (defclass instance ()
-  ((tag :initarg :tag :accessor tag)
+  ((tag :initarg :tag :accessor tag :initform nil)
    (consumed-p :initarg :consumed-p :accessor consumed-p :type boolean :initform t)
    (consumed   :initarg :consumed :accessor consumed :type list :initform nil)
    (created    :initarg :created  :accessor created  :type list :initform nil)))
