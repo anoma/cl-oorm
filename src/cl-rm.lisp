@@ -59,7 +59,8 @@
 (defclass method-resource ()
   ;; type is funcallable to be more accurate.
   ;; If we have more outputs, then we'd care about that as a field
-  ((gf :initarg :gf :accessor gf :type symbol)))
+  ((gf :initarg :gf :accessor gf :type symbol)
+   (num-args :initarg :num-args :accessor num-args :type fixnum)))
 
 ;;; #############################################################################
 ;;;                               Constructors                                  #
@@ -119,8 +120,11 @@
   (cl-rm.utils:obj-equalp
    ;; We check the output is equal to the work
    (resource->obj (cadr (created instance)))
+   ;; We assume all inputs are stored next to each other at the start
+   ;; of the consumed
    (apply (gf object)
-          (mapcar #'resource->obj (consumed instance)))))
+          (mapcar #'resource->obj
+                  (serapeum:take (num-args object) (consumed instance))))))
 
 (defmethod obj-resource-logic ((object integer) (instance instance) any)
   t)
@@ -173,11 +177,13 @@
 ;; With a better environment we need a better way of expressing the
 ;; arguments
 (defun transact-expression (expression result)
-  (let ((consumed (mapcar #'obj->resource (cdr expression)))
-        (output   (obj->resource result))
-        ;; just using the car isn't the most elegant
-        (function (obj->resource
-                   (make-instance 'method-resource :gf (car expression)))))
+  (let* ((consumed (mapcar #'obj->resource (cdr expression)))
+         (output   (obj->resource result))
+         ;; just using the car isn't the most elegant
+         (function (obj->resource
+                    (make-instance 'method-resource
+                                   :gf (car expression)
+                                   :num-args (length consumed)))))
     (labels ((create-consumed (object)
                (make-instance 'instance
                               :created (list function output)
