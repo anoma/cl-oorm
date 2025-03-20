@@ -4,3 +4,19 @@ This code demonstrates compiling CL objects to resources.
 
 This code is not intended to be specs compliant, but strategies to
 make it specs compliant however are known
+
+** Known Limitations
+This mode is great because of mapping CLOS Objects to Resources,
+however this model is also limited because we are tied using CL here
+as the meta model. This section covers in which ways we were limited
+or what proper methods we envisioned that couldn't be practically
+done.
+
+1. Intent formats being automatically solvable. If we used =Prolog= as
+   the meta-language here, we could have had Intent resources give
+   constraint information when trying to finalize a transaction, due
+   to this, the solving aspect and format is under cooked in the code
+2. Because our semantics don't tie completely within CL, and
+   deallocation is a completely different time for the resource model,
+   we have to model this directly with the =delete= method that we
+   carry around instead of making it apart of the life cycle
