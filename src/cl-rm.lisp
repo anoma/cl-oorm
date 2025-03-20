@@ -149,11 +149,29 @@
              ;; manner
              consumed?)))
 
+;; Now let us verify our compliance unit
+(-> verify-compliance-unit (compliance-unit) boolean)
+(defun verify-compliance-unit (compliance)
+  (let ((instances (instances compliance)))
+    (every (lambda (instance)
+             (verify (tag instance) instance (consumed-p instance)))
+           instances)))
+
+
+;;; #############################################################################
+;;;                           Transaction Environment                           #
+;;; #############################################################################
+
+;; Current the transaction environment is quite simple and naive this
+;; needs a proper environment around it.
+
 (defmacro transact (expression)
   `(transact-expression (list ',(car expression)
                               ,@(cdr expression))
                         ,expression))
 
+;; With a better environment we need a better way of expressing the
+;; arguments
 (defun transact-expression (expression result)
   (let ((consumed (mapcar #'obj->resource (cdr expression)))
         (output   (obj->resource result))
@@ -177,10 +195,23 @@
               (create-output output)
               (mapcar #'create-consumed consumed))))))
 
-;; Now let us verify our compliance unit
-(-> verify-compliance-unit (compliance-unit) boolean)
-(defun verify-compliance-unit (compliance)
-  (let ((instances (instances compliance)))
-    (every (lambda (instance)
-             (verify (tag instance) instance (consumed-p instance)))
-           instances)))
+;; Currently these are not hooked-up to transaction
+(defparameter *current-environment* (list)
+  "I am the current environment for compiling a transaction")
+
+(defparameter *top-level-action* (list nil (make-hash-table))
+  "I am the top level transaction environment.
+
+My structure is as follows:
+
+1. a map from owner → signature
+2. A top level action to sign over")
+
+(defun top-level-action ()
+  (car *top-level-action*))
+
+(defun signed-action (key)
+  (gethash key (cadr *top-level-action*)))
+
+(defun emit-resource (resource)
+  (push resource *current-environment*))
