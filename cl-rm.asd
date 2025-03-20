@@ -21,4 +21,7 @@
   :pathname "test/"
   :serial t
   :components
-  ((:file package)))
+  ((:file package)
+   (:file run-tests))
+  :perform (asdf:test-op (o s)
+                         (uiop:symbol-call :cl-rm.test :run-tests-error)))
