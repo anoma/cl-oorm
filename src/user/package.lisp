@@ -9,6 +9,11 @@
 
    :mk-integer :counted
 
-   :add :add-2)
+   :add :add-2
+
+   ;; Ownership API
+   :ownership-mixin :owner
+   ;; Fixed-Supply API
+   :fixed-supply-mixin :quantity)
   (:use #:cl-rm.utils #:cl-rm
         #:common-lisp #:serapeum #:ironclad))
