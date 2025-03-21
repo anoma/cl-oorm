@@ -20,3 +20,9 @@ done.
    deallocation is a completely different time for the resource model,
    we have to model this directly with the =delete= method that we
    carry around instead of making it apart of the life cycle
+3. We tie the model for ownership to creation and deletion in a way
+   that leaks the resource model this should really exist on
+   operations however due to how the RM is we have to do this at an
+   improper abstraction level for what we'd like to actually write
+   - More exploration is required to fully understand this issue
+     better and how to move the constraints the user has to write.
