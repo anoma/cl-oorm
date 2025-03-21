@@ -136,6 +136,10 @@
 ;;;                                    API                                      #
 ;;; #############################################################################
 
+(-> kind (resource) integer)
+(defun kind (resource)
+  (sxhash (list (logic resource) (label resource))))
+
 (-> resource->obj (resource) t)
 (defun resource->obj (x)
   (case (label x)

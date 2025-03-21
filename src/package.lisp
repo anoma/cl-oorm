@@ -50,6 +50,7 @@
    ;; Model Meta Protocols (because we can't hack the MOP)
    :delete
    :resource-logic     ; this exists as the base predicate for now
+   :kind
    ;; Normal API
    :verify
    :transact
