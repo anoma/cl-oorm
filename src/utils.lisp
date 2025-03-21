@@ -58,14 +58,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun list-to-class (class list)
-  ;; Should we make a prototype or do an instance like this I'm
-  ;; skeptical of an instance due to finalization logic that we should
-  ;; not go through.
-
-  ;; For now with no docs, we shall do this, but when I have internet
-  ;; do something better
-  (apply #'make-instance
-         class
+  (apply #'copy-instance
+         ;; I am assuming that the class is already finalized, in
+         ;; getting data online (internet ,friend ,etc) this would
+         ;; fail, but on one's own system... this is good enough
+         (c2mop:class-prototype class)
          (mapcan (lambda (slot value)
                    (list (car (c2mop:slot-definition-initargs slot)) value))
                  (instance-slots class)
