@@ -74,8 +74,8 @@
 ;;;                                 Protocols                                   #
 ;;; #############################################################################
 
-(defgeneric obj-resource-logic (object instance any)
-  (:documentation "I run the resource obj-resource-logic for a given type"))
+(defgeneric resource-logic (object instance any)
+  (:documentation "I run the resource resource-logic for a given type"))
 
 (defgeneric obj->resource (object)
   (:documentation "I turn an object into a resource"))
@@ -102,7 +102,7 @@
     (make-instance
      'resource
      :data (cl-rm.utils:instance-values x)
-     :logic #'obj-resource-logic
+     :logic #'resource-logic
      ;; Label is a reference to the slot values that we need to refer
      ;; to, however since we recreate the value and the data is
      ;; available Ill elide this detail, what we want is to basically
@@ -113,13 +113,13 @@
 
 (defmethod obj->resource ((x number))
   (make-instance 'resource :data (list x)
-                           :logic #'obj-resource-logic
+                           :logic #'resource-logic
                            :label 'built-in-class))
 
 (defmethod obj->resource ((r resource))
   r)
 
-(defmethod obj-resource-logic ((object method-resource) (instance instance) any)
+(defmethod resource-logic ((object method-resource) (instance instance) any)
   (cl-rm.utils:obj-equalp
    ;; We check the output is equal to the work
    (resource->obj (cadr (created instance)))
@@ -129,7 +129,7 @@
           (mapcar #'resource->obj
                   (serapeum:take (num-args object) (consumed instance))))))
 
-(defmethod obj-resource-logic ((object integer) (instance instance) any)
+(defmethod resource-logic ((object integer) (instance instance) any)
   t)
 
 ;;; #############################################################################

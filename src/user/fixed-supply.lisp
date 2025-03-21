@@ -48,12 +48,12 @@ In particular I assure that x number of tokens are created or burned"))
                          :class-assurance (class-name (class-of fixed-supply))
                          :should-create? create)))
 
-(defmethod obj-resource-logic ((object fixed-supply-intent) (instance instance) consumed?)
+(defmethod resource-logic ((object fixed-supply-intent) (instance instance) consumed?)
   (if consumed?
       ;; TODO write
       nil
       t))
-(defmethod obj-resource-logic :around ((object fixed-supply-mixin) (instance instance) consumed?)
+(defmethod resource-logic :around ((object fixed-supply-mixin) (instance instance) consumed?)
   (call-next-method))
 
 ;;; #############################################################################
