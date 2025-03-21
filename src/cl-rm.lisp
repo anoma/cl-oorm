@@ -182,17 +182,34 @@
 ;; With a better environment we need a better way of expressing the
 ;; arguments
 (defun transact-expression (expression result)
-  (let* ((consumed (mapcar #'obj->resource (cdr expression)))
-         (output   (obj->resource result))
+  (let* ((consumed (cdr expression))
          ;; just using the car isn't the most elegant
-         (function (obj->resource
-                    (make-instance 'method-resource
-                                   :gf (car expression)
-                                   :num-args (length consumed))))
-         (full-consumed (append consumed (current-consumed)))
-         (full-created  (append (list function output)
-                                (current-created))))
+         (function (make-instance 'method-resource
+                                  :gf (car expression)
+                                  :num-args (length consumed)))
+         ;; We are filtering out resources that are in the inputs that
+         ;; emit themselves. This isn't full proof as we really should
+         ;; use remove-duplicates, however this has the issue of
+         ;; removing (+ 1 1).... I think I need to implement a better
+         ;; system for function application to better see what
+         ;; arguments it takes
+         ;;
+         ;; A more robust system is to mark what slot I care about and
+         ;; what positions do I need to apply this in, that should
+         ;; work generically
+         (full-consumed
+           (mapcar #'obj->resource
+                   (append consumed
+                           (remove-if (lambda (x)
+                                        (member x consumed))
+                                      (current-consumed)))))
+         (full-created
+           (mapcar #'obj->resource
+                   (append (list function result)
+                           (remove-if (lambda (x) (member x result))
+                                      (current-created))))))
     (labels ((create-consumed (object)
+               (format t "~A" object)
                (make-instance 'instance
                               :created full-created
                               :consumed full-consumed
@@ -206,7 +223,7 @@
       (make-compliance-unit
        ;; Order is: function, output, created, inputs, consumed
        (append (mapcar #'create-output full-created)
-               (mapcar #'create-consumed consumed))))))
+               (mapcar #'create-consumed full-consumed))))))
 
 ;; Currently these are not hooked-up to transaction
 (defun empty-environment ()
@@ -233,12 +250,10 @@ My structure is as follows:
   (gethash key (cadr *top-level-action*)))
 
 (defun emit-created (object)
-  (push (obj->resource object)
-        (car *current-environment*)))
+  (push object (car *current-environment*)))
 
 (defun emit-consumed (object)
-  (push (obj->resource object)
-        (cadr *current-environment*)))
+  (push object (cadr *current-environment*)))
 
 (defun current-created  () (car *current-environment*))
 (defun current-consumed () (cadr *current-environment*))
