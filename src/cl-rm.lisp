@@ -116,6 +116,9 @@
                            :logic #'obj-resource-logic
                            :label 'built-in-class))
 
+(defmethod obj->resource ((r resource))
+  r)
+
 (defmethod obj-resource-logic ((object method-resource) (instance instance) any)
   (cl-rm.utils:obj-equalp
    ;; We check the output is equal to the work
@@ -170,9 +173,11 @@
 ;; needs a proper environment around it.
 
 (defmacro transact (expression)
-  `(transact-expression (list ',(car expression)
-                              ,@(cdr expression))
-                        ,expression))
+  `(let ((*current-environment* (empty-environment))
+         (*top-level-action* (list ',(car expression) (make-hash-table))))
+     (transact-expression (list ',(car expression)
+                                ,@(cdr expression))
+                          ,expression)))
 
 ;; With a better environment we need a better way of expressing the
 ;; arguments
@@ -183,11 +188,14 @@
          (function (obj->resource
                     (make-instance 'method-resource
                                    :gf (car expression)
-                                   :num-args (length consumed)))))
+                                   :num-args (length consumed))))
+         (full-consumed (append consumed (current-consumed)))
+         (full-created  (append (list function output)
+                                (current-created))))
     (labels ((create-consumed (object)
                (make-instance 'instance
-                              :created (list function output)
-                              :consumed consumed
+                              :created full-created
+                              :consumed full-consumed
                               :consumed-p t
                               ;; modeling of tag not online
                               :tag object))
@@ -196,13 +204,15 @@
                  (setf (consumed-p obj) nil)
                  obj)))
       (make-compliance-unit
-       ;; Order is: function, output, inputs
-       (list* (create-output function)
-              (create-output output)
-              (mapcar #'create-consumed consumed))))))
+       ;; Order is: function, output, created, inputs, consumed
+       (append (mapcar #'create-output full-created)
+               (mapcar #'create-consumed consumed))))))
 
 ;; Currently these are not hooked-up to transaction
-(defparameter *current-environment* (list)
+(defun empty-environment ()
+  (list nil nil))
+
+(defparameter *current-environment* (empty-environment)
   "I am the current environment for compiling a transaction")
 
 (defparameter *top-level-action* (list nil (make-hash-table))
@@ -213,11 +223,22 @@ My structure is as follows:
 1. a map from owner → signature
 2. A top level action to sign over")
 
+(defun flush-environment ()
+  (setf *current-environment* (empty-environment)))
+
 (defun top-level-action ()
   (car *top-level-action*))
 
 (defun signed-action (key)
   (gethash key (cadr *top-level-action*)))
 
-(defun emit-resource (resource)
-  (push resource *current-environment*))
+(defun emit-created (object)
+  (push (obj->resource object)
+        (car *current-environment*)))
+
+(defun emit-consumed (object)
+  (push (obj->resource object)
+        (cadr *current-environment*)))
+
+(defun current-created  () (car *current-environment*))
+(defun current-consumed () (cadr *current-environment*))

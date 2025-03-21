@@ -49,7 +49,16 @@
    ;;
    ;; Model Meta Protocols (because we can't hack the MOP)
    :delete
-   :obj-resource-logic               ; this exists as the base predicate for now
+   :obj-resource-logic     ; this exists as the base predicate for now
    ;; Normal API
    :verify
-   :transact))
+   :transact
+
+   ;; Environmental manipulation functions
+   :top-level-action :signed-action
+   :emit-created :emit-consumed
+   :current-created :current-consumed
+
+   ;; Useful to expose for testing, should not be used by users
+   :*current-environment* :*top-level-action*
+   :empty-environment :flush-environment))
