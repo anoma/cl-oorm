@@ -59,10 +59,7 @@
 
 (defun list-to-class (class list)
   (apply #'copy-instance
-         ;; I am assuming that the class is already finalized, in
-         ;; getting data online (internet ,friend ,etc) this would
-         ;; fail, but on one's own system... this is good enough
-         (c2mop:class-prototype class)
+         (allocate-instance class)
          (mapcan (lambda (slot value)
                    (list (car (c2mop:slot-definition-initargs slot)) value))
                  (instance-slots class)
