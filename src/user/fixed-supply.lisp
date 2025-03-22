@@ -41,6 +41,9 @@ In particular I assure that x number of tokens are created or burned"))
                                  &rest initargs &key &allow-other-keys)
   (apply #'initialize-instance object initargs))
 
+(defmethod cl-rm:delete :after ((object fixed-supply-mixin))
+  (use object))
+
 (-> make-fixed-supply-intent (fixed-supply-mixin boolean) fixed-supply-intent)
 (defun make-fixed-supply-intent (fixed-supply create)
   (values (make-instance 'fixed-supply-intent
@@ -53,8 +56,25 @@ In particular I assure that x number of tokens are created or burned"))
       ;; TODO write
       nil
       t))
+
+(defmethod resource-logic ((object fixed-supply-mixin) (instance instance) consumed?)
+  t)
+;; This code is very low level sadly
 (defmethod resource-logic :around ((object fixed-supply-mixin) (instance instance) consumed?)
-  (call-next-method))
+  (let* ((class (class-of object))
+         (kind-want (manual-kind #'resource-logic (find-class 'fixed-supply-intent))))
+    (and (call-next-method)
+         (find-if
+          (lambda (resource)
+            (and (= kind-want (kind resource))
+                 (let ((found (resource->obj resource)))
+                   (and
+                    (eq (class-assurance found) (class-name class))
+                    (if consumed?
+                        (should-create? found)
+                        (not (should-create? found)))))))
+          (created instance))
+         t)))
 
 ;;; #############################################################################
 ;;;                                   API                                       #
