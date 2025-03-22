@@ -53,12 +53,22 @@ In particular I assure that x number of tokens are created or burned"))
 
 (defmethod resource-logic ((object fixed-supply-intent) (instance instance) consumed?)
   (if consumed?
-      ;; TODO write
-      nil
+      (let* ((class (find-class (class-assurance object)))
+             (kind-wanted (manual-kind #'resource-logic class)))
+        (and (find-if
+              (lambda (resource)
+                (and (= kind-wanted (kind resource))
+                  (= (quantity (resource->obj resource))
+                     (quantity object))))
+              (if (should-create? object)
+                  (created instance)
+                  (consumed instance)))
+             t))
       t))
 
-(defmethod resource-logic ((object fixed-supply-mixin) (instance instance) consumed?)
-  t)
+;; We should be abstract but I'm testing directly against the mixin
+(defmethod resource-logic ((object fixed-supply-mixin) (instance instance) consumed?) t)
+
 ;; This code is very low level sadly
 (defmethod resource-logic :around ((object fixed-supply-mixin) (instance instance) consumed?)
   (let* ((class (class-of object))
