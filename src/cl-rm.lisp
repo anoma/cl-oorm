@@ -182,11 +182,14 @@
 ;; needs a proper environment around it.
 
 (defmacro transact (expression)
-  `(let ((*current-environment* (empty-environment))
-         (*top-level-action* (list ',(car expression) (make-hash-table))))
-     (transact-expression (list ',(car expression)
-                                ,@(cdr expression))
-                          ,expression)))
+  ;; poor man's stepper
+  (let ((rest (gensym "CDR")))
+    `(let* ((*current-environment* (empty-environment))
+            (*top-level-action* (list ',(car expression) (make-hash-table)))
+            (,rest (list ,@(cdr expression))))
+       (mapcar #'delete ,rest)
+       (transact-expression (list* ',(car expression) ,rest)
+                            (apply #',(car expression) ,rest)))))
 
 ;; With a better environment we need a better way of expressing the
 ;; arguments
