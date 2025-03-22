@@ -203,6 +203,7 @@
          (function (make-instance 'method-resource
                                   :gf (car expression)
                                   :num-args (length consumed)))
+         (results  (list function result))
          ;; We are filtering out resources that are in the inputs that
          ;; emit themselves. This isn't full proof as we really should
          ;; use remove-duplicates, however this has the issue of
@@ -221,11 +222,10 @@
                                       (current-consumed)))))
          (full-created
            (mapcar #'obj->resource
-                   (append (list function result)
-                           (remove-if (lambda (x) (member x result))
+                   (append results
+                           (remove-if (lambda (x) (member x results))
                                       (current-created))))))
     (labels ((create-consumed (object)
-               (format t "~A" object)
                (make-instance 'instance
                               :created full-created
                               :consumed full-consumed
