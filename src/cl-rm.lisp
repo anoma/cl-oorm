@@ -138,16 +138,21 @@
 
 (-> kind (resource) integer)
 (defun kind (resource)
-  (sxhash (list (logic resource) (label resource))))
+  (manual-kind (logic resource) (label resource)))
 
-(-> resource->obj (resource) t)
+(-> manual-kind (function t) integer)
+(defun manual-kind (logic label)
+  (sxhash (list logic label)))
+
+(-> resource->obj ((or null resource)) t)
 (defun resource->obj (x)
-  (case (label x)
-    (built-in-class
-     (car (data x)))
-    (t
-     (cl-rm.utils:list-to-class (c2mop:ensure-finalized (label x))
-                                (data x)))))
+  (when x
+    (case (label x)
+      (built-in-class
+       (car (data x)))
+      (t
+       (cl-rm.utils:list-to-class (c2mop:ensure-finalized (label x))
+                                  (data x))))))
 
 (defmethod verify ((resource resource) (instance instance) consumed?)
   ;; time for the fun

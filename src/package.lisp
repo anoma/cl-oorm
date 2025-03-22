@@ -51,6 +51,7 @@
    :delete
    :resource-logic     ; this exists as the base predicate for now
    :kind
+   :manual-kind
    ;; Normal API
    :verify
    :transact
