@@ -168,10 +168,14 @@
 ;; Now let us verify our compliance unit
 (-> verify-compliance-unit (compliance-unit) boolean)
 (defun verify-compliance-unit (compliance)
+  (null (failed-compliance-unit compliance)))
+
+(-> failed-compliance-unit (compliance-unit) list)
+(defun failed-compliance-unit (compliance)
   (let ((instances (instances compliance)))
-    (every (lambda (instance)
-             (verify (tag instance) instance (consumed-p instance)))
-           instances)))
+    (remove-if (lambda (instance)
+                 (verify (tag instance) instance (consumed-p instance)))
+               instances)))
 
 
 ;;; #############################################################################

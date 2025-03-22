@@ -43,6 +43,7 @@
    :obj->resource
    :resource->obj
    :verify-compliance-unit
+   :failed-compliance-unit
 
    ;;
    ;; API, I think this is the main public part
