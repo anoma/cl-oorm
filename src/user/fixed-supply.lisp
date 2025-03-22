@@ -55,15 +55,14 @@ In particular I assure that x number of tokens are created or burned"))
   (if consumed?
       (let* ((class (find-class (class-assurance object)))
              (kind-wanted (manual-kind #'resource-logic class)))
-        (and (find-if
-              (lambda (resource)
-                (and (= kind-wanted (kind resource))
-                  (= (quantity (resource->obj resource))
-                     (quantity object))))
-              (if (should-create? object)
-                  (created instance)
-                  (consumed instance)))
-             t))
+        (true (find-if
+               (lambda (resource)
+                 (and (= kind-wanted (kind resource))
+                      (= (quantity (resource->obj resource))
+                         (quantity object))))
+               (if (should-create? object)
+                   (created instance)
+                   (consumed instance)))))
       t))
 
 ;; We should be abstract but I'm testing directly against the mixin
@@ -74,17 +73,15 @@ In particular I assure that x number of tokens are created or burned"))
   (let* ((class (class-of object))
          (kind-want (manual-kind #'resource-logic (find-class 'fixed-supply-intent))))
     (and (call-next-method)
-         (find-if
-          (lambda (resource)
-            (and (= kind-want (kind resource))
-                 (let ((found (resource->obj resource)))
-                   (and
-                    (eq (class-assurance found) (class-name class))
-                    (if consumed?
-                        (should-create? found)
-                        (not (should-create? found)))))))
-          (created instance))
-         t)))
+         (true (find-if
+                (lambda (resource)
+                  (and (= kind-want (kind resource))
+                       (let ((found (resource->obj resource)))
+                         (and (eq (class-assurance found) (class-name class))
+                              (if consumed?
+                                  (should-create? found)
+                                  (not (should-create? found)))))))
+                (created instance))))))
 
 ;;; #############################################################################
 ;;;                                   API                                       #
