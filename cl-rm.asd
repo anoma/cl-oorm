@@ -1,5 +1,5 @@
 (asdf:defsystem :cl-rm
-  :depends-on (:ironclad :serapeum :closer-mop :trivial-utf-8)
+  :depends-on (:ironclad :serapeum :closer-mop :trivial-utf-8 :fset)
   :version "0.1.0"
   :description "Common Lisp Objects to the Resource Machine"
   :license "MIT"
@@ -26,6 +26,7 @@
   :components
   ((:file package)
    (:file run-tests)
-   (:file numbers))
+   (:file numbers)
+   (:file fixed-supply))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :cl-rm.test :run-tests-error)))

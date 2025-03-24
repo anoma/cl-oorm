@@ -119,15 +119,17 @@
 (defmethod obj->resource ((r resource))
   r)
 
-(defmethod resource-logic ((object method-resource) (instance instance) any)
-  (cl-rm.utils:obj-equalp
-   ;; We check the output is equal to the work
-   (resource->obj (cadr (created instance)))
-   ;; We assume all inputs are stored next to each other at the start
-   ;; of the consumed
-   (apply (gf object)
-          (mapcar #'resource->obj
-                  (serapeum:take (num-args object) (consumed instance))))))
+(defmethod resource-logic ((object method-resource) (instance instance) consumed?)
+  (if consumed?
+      t
+      (cl-rm.utils:obj-equalp
+       ;; We check the output is equal to the work
+       (resource->obj (cadr (created instance)))
+       ;; We assume all inputs are stored next to each other at the start
+       ;; of the consumed
+       (apply (gf object)
+              (mapcar #'resource->obj
+                      (serapeum:take (num-args object) (consumed instance)))))))
 
 (defmethod resource-logic ((object integer) (instance instance) any)
   t)
@@ -136,6 +138,10 @@
 ;;;                                    API                                      #
 ;;; #############################################################################
 
+;; #############################################################################
+;;                                    Kinds                                    #
+;; #############################################################################
+
 (-> kind (resource) integer)
 (defun kind (resource)
   (manual-kind (logic resource) (label resource)))
@@ -143,6 +149,19 @@
 (-> manual-kind (function t) integer)
 (defun manual-kind (logic label)
   (sxhash (list logic label)))
+
+;; We should define this over both compliance-units and transactions
+(defmethod kind-balance ((comp compliance-unit))
+  (let* ((instances (instances comp))
+         (consumed (mapcar #'tag  (remove-if #'consumed-p instances)))
+         (created  (mapcar #'tag (remove-if-not #'consumed-p instances))))
+    (flet ((sets-of-kind (resources default-value)
+             (reduce (lambda (s1 s2)
+                       (fset:map-union s1 s2 #'+))
+                     (mapcar (lambda (x)
+                               (fset:with (fset:empty-map) (kind x) default-value))
+                             resources))))
+      (fset:map-union (sets-of-kind consumed 1) (sets-of-kind created -1) #'+))))
 
 (-> resource->obj ((or null resource)) t)
 (defun resource->obj (x)
