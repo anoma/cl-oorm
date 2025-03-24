@@ -23,6 +23,28 @@
 (defun fixed-supply-transaction ()
   (transact (quantity (1000-supply))))
 
+(defun fixed-supply-all-balanced ()
+  "We abuse transact output as being consumed"
+  (let ((supply (1000-supply)))
+    (transact (drop-all
+               (1000-supply)
+               (cl-rm.user::make-fixed-supply-intent supply t)
+               (cl-rm.user::make-fixed-supply-intent supply nil)))))
+
+(defun fixed-supply-isnt-balanced ()
+  "We abuse transact output as being consumed"
+  (let ((supply (1000-supply)))
+    (transact (drop-all
+               ;; drop the 2 not the 1000-supply!!! We just create it
+               (progn (1000-supply) 2)
+               ;; This will succeed, since we are creating
+               (cl-rm.user::make-fixed-supply-intent supply t)
+               ;; This will fail
+               (cl-rm.user::make-fixed-supply-intent supply nil)))))
+
+(defun drop-all (&rest arguments)
+  (declare (ignorable arguments))
+  1)
 
 (define-test environment-is-correct
   :parent cl-rm-fixed-supply
@@ -63,3 +85,14 @@
     (is = 2 (fset:lookup kinds
                          (kind (obj->resource (1000-intent))))
         "The intent is added twice once for create and once for destroy")))
+
+(define-test fixed-supply-intent-checks-properly
+  :parent cl-rm-fixed-supply
+  (is = 0 (fset:lookup (cl-rm:kind-balance (fixed-supply-all-balanced))
+                       (kind (obj->resource (1000-intent)))))
+  (true (verify-compliance-unit (fixed-supply-all-balanced)))
+  (false (verify-compliance-unit (fixed-supply-isnt-balanced))))
+
+
+
+
