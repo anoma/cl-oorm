@@ -37,9 +37,11 @@
     (transact (drop-all
                ;; drop the 2 not the 1000-supply!!! We just create it
                (progn (1000-supply) 2)
-               ;; This will succeed, since we are creating
+               ;; This will succeed, since we are creating a fixed
+               ;; supply intent by hand
                (cl-rm.user::make-fixed-supply-intent supply t)
-               ;; This will fail
+               ;; This will fail as the 1000-supply isn't being
+               ;; consumed by drop-all
                (cl-rm.user::make-fixed-supply-intent supply nil)))))
 
 (defun drop-all (&rest arguments)

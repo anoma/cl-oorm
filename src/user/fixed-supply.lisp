@@ -10,6 +10,9 @@
 (defclass fixed-supply-mixin ()
   ((supply-quantity :initarg :supply-quantity
                     :accessor quantity :type integer)
+   ;; Use after and before methods but use (list class-name-of-action symbol)
+   ;; This can be simplified by swapping the method order and we can
+   ;; go back to a bool
    (already-global :initarg :already-global
                    :accessor global? :type boolean
                    :initform nil))
@@ -48,6 +51,8 @@ In particular I assure that x number of tokens are created or burned"))
 
 (-> make-fixed-supply-intent (fixed-supply-mixin boolean) fixed-supply-intent)
 (defun make-fixed-supply-intent (fixed-supply create)
+  "Makes a `fixed-supply-intent' on the given instance, the second argument is
+for if we should create or consume"
   (values (make-instance 'fixed-supply-intent
                          :quantity (quantity fixed-supply)
                          :class-assurance (class-name (class-of fixed-supply))
