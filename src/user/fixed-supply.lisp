@@ -15,7 +15,7 @@
                    :initform nil))
   (:documentation "I maintain the invariant that things are of a fixed supply"))
 
-(defclass fixed-supply-intent ()
+(defclass fixed-supply-intent (cl-rm.mixins:pointwise-mixin) ; just for equality
   ((quantity         :initarg :quantity        :accessor quantity :type integer)
    (class-assurance  :initarg :class-assurance :accessor class-assurance :type symbol)
    (should-create?   :initarg :should-create? :accessor should-create? :type boolean))
@@ -44,6 +44,8 @@ In particular I assure that x number of tokens are created or burned"))
 (defmethod cl-rm:delete :after ((object fixed-supply-mixin))
   (use object))
 
+(cl-rm.utils:define-generic-print fixed-supply-intent)
+
 (-> make-fixed-supply-intent (fixed-supply-mixin boolean) fixed-supply-intent)
 (defun make-fixed-supply-intent (fixed-supply create)
   (values (make-instance 'fixed-supply-intent
@@ -64,9 +66,6 @@ In particular I assure that x number of tokens are created or burned"))
                    (created instance)
                    (consumed instance)))))
       t))
-
-;; We should be abstract but I'm testing directly against the mixin
-(defmethod resource-logic ((object fixed-supply-mixin) (instance instance) consumed?) t)
 
 ;; This code is very low level sadly
 (defmethod resource-logic :around ((object fixed-supply-mixin) (instance instance) consumed?)
