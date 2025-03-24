@@ -14,6 +14,8 @@
    ;; Ownership API
    :ownership-mixin :owner
    ;; Fixed-Supply API
-   :fixed-supply-mixin :quantity)
+   :fixed-supply-mixin :quantity
+   :fixed-supply-intent :class-assurance :should-create?
+   :split :use)
   (:use #:cl-rm.utils #:cl-rm
         #:common-lisp #:serapeum #:ironclad))
