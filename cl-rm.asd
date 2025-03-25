@@ -33,6 +33,7 @@
   ((:file package)
    (:file run-tests)
    (:file numbers)
-   (:file fixed-supply))
+   (:file fixed-supply)
+   (:file environment))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :cl-rm.test :run-tests-error)))

@@ -39,9 +39,7 @@ env ⟶ (kind resource) → data-to-be-passed in")))
     (setf (environment env)
           (fset:with table
                      res
-                     (fset:with (or (fset:lookup table res) (fset:empty-map))
-                                key
-                                value)))))
+                     (fset:with (lookup-metadata-table env data) key value)))))
 
 (-> lookup-metadata-table (compilation-environment t) fset:map)
 (defun lookup-metadata-table (env data)
