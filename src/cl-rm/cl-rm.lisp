@@ -253,7 +253,10 @@
                               :consumed full-consumed
                               :consumed-p t
                               ;; modeling of tag not online
-                              :tag object))
+                              :tag object
+                              :environment (cl-rm.env:lookup-metadata-table
+                                            cl-rm.env:*environment*
+                                            object)))
              (create-output (object)
                (let ((obj (create-consumed object)))
                  (setf (consumed-p obj) nil)
