@@ -25,6 +25,10 @@
    direct slot values"
   (c2mop:class-direct-slots (class-of object)))
 
+(defmethod fset:compare ((x pointwise-mixin) (y pointwise-mixin))
+  (fset:compare (to-pointwise-list x)
+                (to-pointwise-list y)))
+
 (defmethod obj-equalp ((obj1 pointwise-mixin) (obj2 pointwise-mixin))
   (and (c2mop:subclassp (type-of obj1) (type-of obj2))
        (obj-equalp (to-pointwise-list obj1)
