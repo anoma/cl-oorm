@@ -44,7 +44,10 @@
   ((tag :initarg :tag :accessor tag :initform nil)
    (consumed-p :initarg :consumed-p :accessor consumed-p :type boolean :initform t)
    (consumed   :initarg :consumed :accessor consumed :type list :initform nil)
-   (created    :initarg :created  :accessor created  :type list :initform nil)))
+   (created    :initarg :created  :accessor created  :type list :initform nil)
+   (environemnt :initarg :environment :accessor environment :initform nil
+                :documentation "I am the specific app data for the instance"))
+  (:documentation "A not very accurate instance"))
 
 
 (defclass compliance-unit ()
