@@ -1,34 +1,50 @@
+;; We can have the other packages define this for us
+(defpackage #:cl-rm.generics
+  (:use #:common-lisp #:serapeum)
+  (:export
+   :consumed :created
+   :tag
+
+   :resource-logic         ; this exists as the base predicate for now
+   :kind
+   :manual-kind
+   :kind-balance
+
+   ;; Normal API
+   :verify
+   :delete
+   ;; Meta Model
+   :obj->resource
+   :resource->obj))
+
 (defpackage #:cl-rm.env
   (:documentation "I hold the environmental model for the compilation model over the RM")
-  (:use #:common-lisp #:serapeum)
+  (:use #:common-lisp #:serapeum #:cl-rm.generics)
   (:export
    ;; Environmental manipulation functions
    :top-level-action :signed-action
    :emit-created :emit-consumed
-   :current-created :current-consumed
 
    ;; Useful to expose for testing, should not be used by users
-   :*current-environment* :*top-level-action*
+   :*current-environment*
    :empty-environment :flush-environment))
 
-(defpackage #:cl-rm
+(uiop:define-package #:cl-rm
   (:documentation "A resource machine implementation and exploration")
   (:shadow :@ :take :delete)
   (:use #:common-lisp #:serapeum #:ironclad)
+  (:use-reexport #:cl-rm.generics)
   (:export
    ;; Types
    :resource
    :label :data :logic :quantity :nonce :ephmeral-p :nullifier-commitment :randseed
 
-   :instance :tag :consumed-p :consumed :created
+   :instance :tag :consumed-p
    :compliance-unit :proof :verifying-key :instances
    :method-resource :gf
    ;; Constructors
    :make-compliance-unit
 
-   ;; Meta Model
-   :obj->resource
-   :resource->obj
    :verify-compliance-unit
    :failed-compliance-unit
 
@@ -36,13 +52,6 @@
    ;; API, I think this is the main public part
    ;;
    ;; Model Meta Protocols (because we can't hack the MOP)
-   :delete
-   :resource-logic         ; this exists as the base predicate for now
-   :kind
-   :manual-kind
-   :kind-balance
-   ;; Normal API
-   :verify
    :transact))
 
 

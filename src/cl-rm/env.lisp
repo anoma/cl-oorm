@@ -1,34 +1,46 @@
 (in-package :cl-rm.env)
 
+;;; #############################################################################
+;;;                                  Types                                      #
+;;; #############################################################################
+
+(defclass compilation-environment ()
+  ((consumed :initarg :consumed :accessor consumed :type list :initform nil)
+   (created  :initarg :created  :accessor created  :type list :initform nil)
+   (comp-operation :initarg :operation
+                   :accessor operation
+                   :type symbol
+                   :documentation "I am the top level operation that is being compiled")
+   (transaction-data :initarg :environment
+                     :accessor environment
+                     :type hash-table
+                     :initform (make-hash-table)
+                     :documentation "I am included in action app-data,
+in particular if you want to include data to a particular resource then
+set a map for the resource such that:
+
+env ⟶ (kind resource) → data-to-be-passed in")))
+
 ;; Currently these are not hooked-up to transaction
-(defun empty-environment ()
-  (list nil nil))
+(defun empty-environment (&key operation)
+  (make-instance 'compilation-environment :operation operation))
+
+;;; #############################################################################
+;;;                                Operations                                   #
+;;; #############################################################################
+
+;;; #############################################################################
+;;;                                  Global                                     #
+;;; #############################################################################
 
 (defparameter *current-environment* (empty-environment)
   "I am the current environment for compiling a transaction")
 
-(defparameter *top-level-action* (list nil (make-hash-table))
-  "I am the top level transaction environment.
-
-My structure is as follows:
-
-1. a map from owner → signature
-2. A top level action to sign over")
-
 (defun flush-environment ()
   (setf *current-environment* (empty-environment)))
 
-(defun top-level-action ()
-  (car *top-level-action*))
-
-(defun signed-action (key)
-  (gethash key (cadr *top-level-action*)))
-
 (defun emit-created (object)
-  (push object (car *current-environment*)))
+  (push object (created *current-environment*)))
 
 (defun emit-consumed (object)
-  (push object (cadr *current-environment*)))
-
-(defun current-created  () (car *current-environment*))
-(defun current-consumed () (cadr *current-environment*))
+  (push object (consumed *current-environment*)))

@@ -50,12 +50,13 @@
 (define-test environment-is-correct
   :parent cl-rm-fixed-supply
   (let* ((cl-rm.env:*current-environment* (cl-rm.env:empty-environment))
-         (supply (1000-supply)))
-    (is = (length (cl-rm.env:current-created)) 2)
+         (supply (1000-supply))
+         (created (cl-rm:created cl-rm.env:*current-environment*)))
+    (is = (length created) 2)
     (true (find-if (lambda (o)
                      (cl-rm.utils:obj-equalp o (1000-intent)))
-                   (cl-rm.env:current-created)))
-    (true (find-if (lambda (o) (eq o supply)) (cl-rm.env:current-created))
+                   created))
+    (true (find-if (lambda (o) (eq o supply)) created)
           "The object should be exactly the same as ours")))
 
 (define-test validated-correctly
