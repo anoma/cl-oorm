@@ -9,10 +9,15 @@
   ((:file package)
    (:file utils)
    (:file mixins)
-   (:file cl-rm)
+   (:module cl-rm
+    :serial t
+    :description "RM Base and Meta Model"
+    :components ((:file package)
+                 (:file cl-rm)))
    (:module user
     :serial t
     :description "RM user code"
+    :depends-on (cl-rm)
     :components ((:file package)
                  (:file numbers)
                  (:file fixed-supply))))

@@ -263,6 +263,8 @@
        (append (mapcar #'create-output full-created)
                (mapcar #'create-consumed full-consumed))))))
 
+
+
 ;; Currently these are not hooked-up to transaction
 (defun empty-environment ()
   (list nil nil))
