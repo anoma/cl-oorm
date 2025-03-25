@@ -210,7 +210,7 @@
 (defmacro transact (expression)
   ;; poor man's stepper
   (let ((rest (gensym "CDR")))
-    `(let* ((cl-rm.env:*current-environment*
+    `(let* ((cl-rm.env:*environment*
               (cl-rm.env:empty-environment :operation ',(car expression)))
             (,rest (list ,@(cdr expression))))
        (mapcar #'delete ,rest)
@@ -241,12 +241,12 @@
                    (append consumed
                            (remove-if (lambda (x)
                                         (member x consumed))
-                                      (consumed cl-rm.env:*current-environment*)))))
+                                      (consumed cl-rm.env:*environment*)))))
          (full-created
            (mapcar #'obj->resource
                    (append results
                            (remove-if (lambda (x) (member x results))
-                                      (created cl-rm.env:*current-environment*))))))
+                                      (created cl-rm.env:*environment*))))))
     (labels ((create-consumed (object)
                (make-instance 'instance
                               :created full-created

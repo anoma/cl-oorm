@@ -26,7 +26,7 @@
    :emit-created :emit-consumed
 
    ;; Useful to expose for testing, should not be used by users
-   :*current-environment*
+   :*environment*
    :empty-environment :flush-environment))
 
 (uiop:define-package #:cl-rm

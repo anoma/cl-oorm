@@ -33,14 +33,14 @@ env ⟶ (kind resource) → data-to-be-passed in")))
 ;;;                                  Global                                     #
 ;;; #############################################################################
 
-(defparameter *current-environment* (empty-environment)
+(defparameter *environment* (empty-environment)
   "I am the current environment for compiling a transaction")
 
 (defun flush-environment ()
-  (setf *current-environment* (empty-environment)))
+  (setf *environment* (empty-environment)))
 
 (defun emit-created (object)
-  (push object (created *current-environment*)))
+  (push object (created *environment*)))
 
 (defun emit-consumed (object)
-  (push object (consumed *current-environment*)))
+  (push object (consumed *environment*)))
