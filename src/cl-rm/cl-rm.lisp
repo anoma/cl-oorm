@@ -5,7 +5,7 @@
 ;;; #############################################################################
 
 ;; We are mostly ignoring details about references for now
-(defclass resource ()
+(defclass resource (cl-rm.mixins:pointwise-mixin)
   ((label :initarg :label :accessor label :type list)
    (data  :initarg :data  :accessor data :type list)
    ;; Think of a better init form for the compilation

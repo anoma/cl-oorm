@@ -14,7 +14,8 @@
    (transaction-data :initarg :environment
                      :accessor environment
                      :type hash-table
-                     :initform (make-hash-table)
+                     ;; we have to use fset as we need our slotwise equality
+                     :initform (fset:empty-map)
                      :documentation "I am included in action app-data,
 in particular if you want to include data to a particular resource then
 set a map for the resource such that:
@@ -28,6 +29,28 @@ env ⟶ (kind resource) → data-to-be-passed in")))
 ;;; #############################################################################
 ;;;                                Operations                                   #
 ;;; #############################################################################
+
+;; We want to expose functions that makes working over things easier
+(-> put-metadata (compilation-environment t t t) fset:map)
+(defun put-metadata (env data key value)
+  "Put any data into a specified key into the environment"
+  (let ((res   (obj->resource data))
+        (table (environment env)))
+    (setf (environment env)
+          (fset:with table
+                     res
+                     (fset:with (or (fset:lookup table res) (fset:empty-map))
+                                key
+                                value)))))
+
+(-> lookup-metadata-table (compilation-environment t) fset:map)
+(defun lookup-metadata-table (env data)
+  (or (fset:lookup (environment env) (obj->resource data))
+      (fset:empty-map)))
+
+(-> lookup-metadata (compilation-environment t t) t)
+(defun lookup-metadata (env data key)
+  (fset:lookup (lookup-metadata-table env data) key))
 
 ;;; #############################################################################
 ;;;                                  Global                                     #
@@ -44,3 +67,5 @@ env ⟶ (kind resource) → data-to-be-passed in")))
 
 (defun emit-consumed (object)
   (push object (consumed *environment*)))
+
+

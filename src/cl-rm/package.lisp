@@ -15,7 +15,9 @@
    :delete
    ;; Meta Model
    :obj->resource
-   :resource->obj))
+   :resource->obj
+   ;; Environmental
+   :environment))
 
 (defpackage #:cl-rm.env
   (:documentation "I hold the environmental model for the compilation model over the RM")
@@ -27,7 +29,11 @@
 
    ;; Useful to expose for testing, should not be used by users
    :*environment*
-   :empty-environment :flush-environment))
+   :empty-environment :flush-environment
+
+   ;; useful for putting things in the metadata table and lookup
+   :put-metadata
+   :lookup-metadata-table :lookup-metadata))
 
 (uiop:define-package #:cl-rm
   (:documentation "A resource machine implementation and exploration")
