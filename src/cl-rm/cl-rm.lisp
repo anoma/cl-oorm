@@ -210,8 +210,8 @@
 (defmacro transact (expression)
   ;; poor man's stepper
   (let ((rest (gensym "CDR")))
-    `(let* ((*current-environment* (empty-environment))
-            (*top-level-action* (list ',(car expression) (make-hash-table)))
+    `(let* ((cl-rm.env:*current-environment* (cl-rm.env:empty-environment))
+            (cl-rm.env:*top-level-action* (list ',(car expression) (make-hash-table)))
             (,rest (list ,@(cdr expression))))
        (mapcar #'delete ,rest)
        (transact-expression (list* ',(car expression) ,rest)
@@ -241,12 +241,12 @@
                    (append consumed
                            (remove-if (lambda (x)
                                         (member x consumed))
-                                      (current-consumed)))))
+                                      (cl-rm.env:current-consumed)))))
          (full-created
            (mapcar #'obj->resource
                    (append results
                            (remove-if (lambda (x) (member x results))
-                                      (current-created))))))
+                                      (cl-rm.env:current-created))))))
     (labels ((create-consumed (object)
                (make-instance 'instance
                               :created full-created
@@ -262,38 +262,3 @@
        ;; Order is: function, output, created, inputs, consumed
        (append (mapcar #'create-output full-created)
                (mapcar #'create-consumed full-consumed))))))
-
-
-
-;; Currently these are not hooked-up to transaction
-(defun empty-environment ()
-  (list nil nil))
-
-(defparameter *current-environment* (empty-environment)
-  "I am the current environment for compiling a transaction")
-
-(defparameter *top-level-action* (list nil (make-hash-table))
-  "I am the top level transaction environment.
-
-My structure is as follows:
-
-1. a map from owner → signature
-2. A top level action to sign over")
-
-(defun flush-environment ()
-  (setf *current-environment* (empty-environment)))
-
-(defun top-level-action ()
-  (car *top-level-action*))
-
-(defun signed-action (key)
-  (gethash key (cadr *top-level-action*)))
-
-(defun emit-created (object)
-  (push object (car *current-environment*)))
-
-(defun emit-consumed (object)
-  (push object (cadr *current-environment*)))
-
-(defun current-created  () (car *current-environment*))
-(defun current-consumed () (cadr *current-environment*))

@@ -13,7 +13,8 @@
     :serial t
     :description "RM Base and Meta Model"
     :components ((:file package)
-                 (:file cl-rm)))
+                 (:file cl-rm)
+                 (:file env)))
    (:module user
     :serial t
     :description "RM user code"

@@ -40,8 +40,7 @@
                ;; This will succeed, since we are creating a fixed
                ;; supply intent by hand
                (cl-rm.user::make-fixed-supply-intent supply t)
-               ;; This will fail as the 1000-supply isn't being
-               ;; consumed by drop-all
+               ;; This will fail as the 1000-supply isn't being consumed by drop-all
                (cl-rm.user::make-fixed-supply-intent supply nil)))))
 
 (defun drop-all (&rest arguments)
@@ -50,13 +49,13 @@
 
 (define-test environment-is-correct
   :parent cl-rm-fixed-supply
-  (let* ((*current-environment* (empty-environment))
+  (let* ((cl-rm.env:*current-environment* (cl-rm.env:empty-environment))
          (supply (1000-supply)))
-    (is = (length (current-created)) 2)
+    (is = (length (cl-rm.env:current-created)) 2)
     (true (find-if (lambda (o)
                      (cl-rm.utils:obj-equalp o (1000-intent)))
-                   (current-created)))
-    (true (find-if (lambda (o) (eq o supply)) (current-created))
+                   (cl-rm.env:current-created)))
+    (true (find-if (lambda (o) (eq o supply)) (cl-rm.env:current-created))
           "The object should be exactly the same as ours")))
 
 (define-test validated-correctly
@@ -68,7 +67,7 @@
   (let* ((transact (fixed-supply-transaction))
          (supply (1000-supply))
          (kinds (cl-rm:kind-balance transact)))
-    (flush-environment)
+    (cl-rm.env:flush-environment)
     ;; This create a balance of
     ;; TEST> (cl-rm::kind-balance (fixed-supply-transaction))
     ;; #{|

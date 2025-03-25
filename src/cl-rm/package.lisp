@@ -1,3 +1,16 @@
+(defpackage #:cl-rm.env
+  (:documentation "I hold the environmental model for the compilation model over the RM")
+  (:use #:common-lisp #:serapeum)
+  (:export
+   ;; Environmental manipulation functions
+   :top-level-action :signed-action
+   :emit-created :emit-consumed
+   :current-created :current-consumed
+
+   ;; Useful to expose for testing, should not be used by users
+   :*current-environment* :*top-level-action*
+   :empty-environment :flush-environment))
+
 (defpackage #:cl-rm
   (:documentation "A resource machine implementation and exploration")
   (:shadow :@ :take :delete)
@@ -30,15 +43,6 @@
    :kind-balance
    ;; Normal API
    :verify
-   :transact
-
-   ;; Environmental manipulation functions
-   :top-level-action :signed-action
-   :emit-created :emit-consumed
-   :current-created :current-consumed
-
-   ;; Useful to expose for testing, should not be used by users
-   :*current-environment* :*top-level-action*
-   :empty-environment :flush-environment))
+   :transact))
 
 

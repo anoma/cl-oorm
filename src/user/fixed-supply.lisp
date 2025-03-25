@@ -34,8 +34,8 @@ In particular I assure that x number of tokens are created or burned"))
   ;; We should abstract, user code should not care about this!!!
   (unless (global? instance)
     (setf (global? instance) t)
-    (emit-created instance)
-    (emit-created (make-fixed-supply-intent instance nil))))
+    (cl-rm.env:emit-created instance)
+    (cl-rm.env:emit-created (make-fixed-supply-intent instance nil))))
 
 ;; We care about copying the instance also initializing So this isn't
 ;; magic just a consequence of copy not calling initialize but
@@ -94,8 +94,8 @@ for if we should create or consume"
 
 ;; We make useage explicit, kinda annoying but it is what it is.
 (defmethod use ((fixed fixed-supply-mixin))
-  (emit-consumed fixed)
-  (emit-created (make-fixed-supply-intent fixed t)))
+  (cl-rm.env:emit-consumed fixed)
+  (cl-rm.env:emit-created (make-fixed-supply-intent fixed t)))
 
 (defmethod split ((fixed fixed-supply-mixin) number)
   (when (> (quantity fixed) number)
