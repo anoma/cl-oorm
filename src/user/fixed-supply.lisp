@@ -59,32 +59,28 @@ for if we should create or consume"
                          :should-create? create)))
 
 (defmethod resource-logic ((object fixed-supply-intent) (instance instance) consumed?)
-  (if consumed?
-      (let* ((class (find-class (class-assurance object)))
-             (kind-wanted (manual-kind #'resource-logic class)))
-        (true (find-if
-               (lambda (resource)
-                 (and (= kind-wanted (kind resource))
-                      (= (quantity (resource->obj resource))
-                         (quantity object))))
-               (if (should-create? object)
-                   (created instance)
-                   (consumed instance)))))
-      t))
+  (or (not consumed?)
+      (true (find-if
+             (lambda (finding)
+               (and (eq (class-name-of finding)
+                        (class-assurance object))
+                    (= (quantity finding)
+                       (quantity object))))
+             (if (should-create? object)
+                 (created instance)
+                 (consumed instance))))))
 
 ;; This code is very low level sadly
 (defmethod resource-logic :around ((object fixed-supply-mixin) (instance instance) consumed?)
-  (let* ((class (class-of object))
-         (kind-want (manual-kind #'resource-logic (find-class 'fixed-supply-intent))))
+  (let* ((class (class-of object)))
     (and (call-next-method)
          (true (find-if
-                (lambda (resource)
-                  (and (= kind-want (kind resource))
-                       (let ((found (resource->obj resource)))
-                         (and (eq (class-assurance found) (class-name class))
-                              (if consumed?
-                                  (should-create? found)
-                                  (not (should-create? found)))))))
+                (lambda (object)
+                  (and (eq (class-name-of object) 'fixed-supply-intent)
+                       (eq (class-assurance object) (class-name class))
+                       (if consumed?
+                           (should-create? object)
+                           (not (should-create? object)))))
                 (created instance))))))
 
 ;;; #############################################################################

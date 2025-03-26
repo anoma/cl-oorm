@@ -127,12 +127,11 @@
       t
       (cl-rm.utils:obj-equalp
        ;; We check the output is equal to the work
-       (resource->obj (cadr (created instance)))
+       (cadr (created instance))
        ;; We assume all inputs are stored next to each other at the start
        ;; of the consumed
        (apply (gf object)
-              (mapcar #'resource->obj
-                      (serapeum:take (num-args object) (consumed instance)))))))
+              (serapeum:take (num-args object) (consumed instance))))))
 
 (defmethod resource-logic ((object integer) (instance instance) any)
   t)
@@ -181,7 +180,9 @@
   (assure boolean
     (funcall (logic resource)
              (resource->obj resource)
-             instance
+             (cl-rm.utils:copy-instance instance
+                                        :consumed (mapcar #'resource->obj (consumed instance))
+                                        :created (mapcar #'resource->obj (created instance)))
              ;; we pass consumed? because we don't reify creation into
              ;; the model, thus it has to be done in an ham-fisted
              ;; manner

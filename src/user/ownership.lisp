@@ -27,11 +27,9 @@
          (or (not consumed?)
              (and sig
                   (true (find-if (lambda (r)
-                                   (and (= (manual-kind #'resource-logic
-                                                        (find-class 'method-resource))
-                                           (kind r))
+                                   (and (c2mop:subclassp (class-of r) 'method-resource)
                                         (ironclad:verify-signature
                                          (owner object)
-                                         (cl-rm.utils:symbol-to-bytes (gf (resource->obj r)))
+                                         (cl-rm.utils:symbol-to-bytes (gf r))
                                          sig)))
                                  (created instance))))))))
