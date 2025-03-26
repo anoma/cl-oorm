@@ -33,6 +33,7 @@
   :components
   ((:file package)
    (:file run-tests)
+   (:file helpers)
    (:file numbers)
    (:file fixed-supply)
    (:file environment)

@@ -43,10 +43,6 @@
                ;; This will fail as the 1000-supply isn't being consumed by drop-all
                (cl-rm.user::make-fixed-supply-intent supply nil)))))
 
-(defun drop-all (&rest arguments)
-  (declare (ignorable arguments))
-  1)
-
 (define-test environment-is-correct
   :parent cl-rm-fixed-supply
   (let* ((cl-rm.env:*environment* (cl-rm.env:empty-environment))
