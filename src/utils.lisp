@@ -8,6 +8,10 @@
   "Turns a [symbol] into a [keyword]"
   (intern (symbol-name symbol) :keyword))
 
+(-> symbol-to-bytes (symbol) array)
+(defun symbol-to-bytes (symbol)
+  (flexi-streams:string-to-octets (symbol-name symbol)))
+
 (defmacro define-generic-print (type)
   `(defmethod print-object ((obj ,type) stream)
      (pprint-logical-block (stream nil)

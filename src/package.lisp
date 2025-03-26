@@ -4,6 +4,7 @@
   (:export
    ;; Generic Utility Functions
    :symbol-to-keyword
+   :symbol-to-bytes
    :define-generic-print
    ;; ###################################
    ;; Generic Data Processing Protocols #
