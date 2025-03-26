@@ -1,5 +1,5 @@
 (asdf:defsystem :cl-rm
-  :depends-on (:ironclad :serapeum :closer-mop :trivial-utf-8 :fset)
+  :depends-on (:ironclad :serapeum :closer-mop :trivial-utf-8 :fset :flexi-streams)
   :version "0.1.0"
   :description "Common Lisp Objects to the Resource Machine"
   :license "MIT"
