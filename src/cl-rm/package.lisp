@@ -17,13 +17,14 @@
    :obj->resource
    :resource->obj
    ;; Environmental
-   :environment))
+   :environment
+   :operation))
 
 (defpackage #:cl-rm.env
   (:documentation "I hold the environmental model for the compilation model over the RM")
   (:use #:common-lisp #:serapeum #:cl-rm.generics)
   (:export
-   ;; Environmental manipulation functions
+ ;; Environmental manipulation functions
    :top-level-action :signed-action
    :emit-created :emit-consumed
 
@@ -33,7 +34,9 @@
 
    ;; useful for putting things in the metadata table and lookup
    :put-metadata
-   :lookup-metadata-table :lookup-metadata))
+   :lookup-metadata-table :lookup-metadata
+   ;; Private key helper functions
+   :lookup-private-key :put-private-key))
 
 (uiop:define-package #:cl-rm
   (:documentation "A resource machine implementation and exploration")

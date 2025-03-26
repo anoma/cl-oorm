@@ -20,7 +20,10 @@
 in particular if you want to include data to a particular resource then
 set a map for the resource such that:
 
-env ⟶ (kind resource) → data-to-be-passed in")))
+env ⟶ (kind resource) → data-to-be-passed in
+
+Non resources can also use it, with their data being pruned before the
+transaction is made")))
 
 ;; Currently these are not hooked-up to transaction
 (defun empty-environment (&key operation)
@@ -43,12 +46,34 @@ env ⟶ (kind resource) → data-to-be-passed in")))
 
 (-> lookup-metadata-table (compilation-environment t) fset:map)
 (defun lookup-metadata-table (env data)
+  "I lookup the metadata table of a particular value"
   (or (fset:lookup (environment env) (obj->resource data))
       (fset:empty-map)))
 
 (-> lookup-metadata (compilation-environment t t) t)
 (defun lookup-metadata (env data key)
+  "I lookup the metadata table of a particular value"
   (fset:lookup (lookup-metadata-table env data) key))
+
+;; These functions use the API but may change, so we encapsulate the
+;; lookup here
+
+(-> put-private-key (compilation-environment ironclad:ed25519-private-key) fset:map)
+(defun put-private-key (env private-key)
+  "Puts the private key as metadata in the public key. We don't add this
+to any resources"
+  (put-metadata
+   env
+   (ironclad:make-public-key :ed25519 :y (ironclad:ed25519-key-y private-key))
+   :private private-key))
+
+(-> lookup-private-key
+    (compilation-environment ironclad:ed25519-public-key)
+    (or nil ironclad:ed25519-private-key))
+(defun lookup-private-key (env pub)
+  "Puts the private key as metadata in the public key. We don't add this
+to any resources"
+  (lookup-metadata env pub :private))
 
 ;;; #############################################################################
 ;;;                                  Global                                     #
