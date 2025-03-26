@@ -13,6 +13,7 @@
 
    ;; Ownership API
    :ownership-mixin :owner
+   :try-signing
    ;; Fixed-Supply API
    :fixed-supply-mixin :quantity
    :fixed-supply-intent :class-assurance :should-create?

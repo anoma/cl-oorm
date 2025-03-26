@@ -21,7 +21,8 @@
     :depends-on (cl-rm)
     :components ((:file package)
                  (:file numbers)
-                 (:file fixed-supply))))
+                 (:file fixed-supply)
+                 (:file ownership))))
     :in-order-to ((asdf:test-op (asdf:test-op :cl-rm/test))))
 
 (asdf:defsystem :cl-rm/test
@@ -34,6 +35,7 @@
    (:file run-tests)
    (:file numbers)
    (:file fixed-supply)
-   (:file environment))
+   (:file environment)
+   (:file ownership))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :cl-rm.test :run-tests-error)))
