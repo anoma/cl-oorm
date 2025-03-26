@@ -22,4 +22,16 @@
            (cl-rm.env:put-metadata env object :signature)))))
 
 (defmethod resource-logic :around ((object ownership-mixin) (instance instance) consumed?)
-  )
+  (let ((sig (fset:lookup (environment instance) :signature)))
+    (and (call-next-method)
+         (or (not consumed?)
+             (and sig
+                  (true (find-if (lambda (r)
+                                   (and (= (manual-kind #'resource-logic
+                                                        (find-class 'method-resource))
+                                           (kind r))
+                                        (ironclad:verify-signature
+                                         (owner object)
+                                         (cl-rm.utils:symbol-to-bytes (gf (resource->obj r)))
+                                         sig)))
+                                 (created instance))))))))

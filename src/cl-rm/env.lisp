@@ -69,7 +69,7 @@ to any resources"
 
 (-> lookup-private-key
     (compilation-environment ironclad:ed25519-public-key)
-    (or nil ironclad:ed25519-private-key))
+    (or null ironclad:ed25519-private-key))
 (defun lookup-private-key (env pub)
   "Puts the private key as metadata in the public key. We don't add this
 to any resources"

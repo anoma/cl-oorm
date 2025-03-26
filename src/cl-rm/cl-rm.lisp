@@ -207,15 +207,17 @@
 ;; Current the transaction environment is quite simple and naive this
 ;; needs a proper environment around it.
 
-(defmacro transact (expression)
+(defmacro transact (expression &key (keys nil))
   ;; poor man's stepper
   (let ((rest (gensym "CDR")))
-    `(let* ((cl-rm.env:*environment*
-              (cl-rm.env:empty-environment :operation ',(car expression)))
-            (,rest (list ,@(cdr expression))))
-       (mapcar #'delete ,rest)
-       (transact-expression (list* ',(car expression) ,rest)
-                            (apply #',(car expression) ,rest)))))
+    `(let ((cl-rm.env:*environment*
+             (cl-rm.env:empty-environment :operation ',(car expression))))
+       ;; Insert the private keys now
+       (mapcar (lambda (k) (cl-rm.env:put-private-key cl-rm.env:*environment* k)) ,keys)
+       (let ((,rest (list ,@(cdr expression))))
+         (mapcar #'delete ,rest)
+         (transact-expression (list* ',(car expression) ,rest)
+                              (apply #',(car expression) ,rest))))))
 
 ;; With a better environment we need a better way of expressing the
 ;; arguments

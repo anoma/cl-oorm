@@ -8,9 +8,10 @@
 (defparameter *alice-public*
   (ironclad:make-public-key :ed25519 :y (ironclad:ed25519-key-y *alice-key*)))
 
-
 (defclass only-owned (ownership-mixin)
   ((value :initarg :value :accessor value)))
+
+(defmethod resource-logic ((object only-owned) (instance instance) consumed?) t)
 
 (defun alice-1 ()
   (make-instance 'only-owned :value 1 :owner *alice-public*))
@@ -21,6 +22,12 @@
     (cl-rm.user:try-signing (alice-1))
     cl-rm.env:*environment*))
 
+(defun Properly-signed-away ()
+  (transact (drop-all (alice-1)) :keys (list *alice-key*)))
+
+(defun improperly-signed-away ()
+  (transact (drop-all (alice-1)) :keys (list *bob-key*)))
+
 
 (define-test signed-actually-signs
   :parent cl-rm-ownership
@@ -29,3 +36,8 @@
     (true (ironclad:verify-signature *alice-public*
                                      (cl-rm.utils:symbol-to-bytes 'foo)
                                      (cl-rm.env:lookup-metadata signed (alice-1) :signature)))))
+
+(define-test ownership-resource-logic-works
+  :parent cl-rm-ownership
+  (true (verify-compliance-unit (properly-signed-away)))
+  (false (verify-compliance-unit (improperly-signed-away))))
