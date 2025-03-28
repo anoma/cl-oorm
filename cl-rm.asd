@@ -21,6 +21,7 @@
     :depends-on (cl-rm)
     :components ((:file package)
                  (:file numbers)
+                 (:file unique)
                  (:file fixed-supply)
                  (:file ownership))))
     :in-order-to ((asdf:test-op (asdf:test-op :cl-rm/test))))
