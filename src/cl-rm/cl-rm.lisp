@@ -77,8 +77,26 @@
 ;;;                                 Protocols                                   #
 ;;; #############################################################################
 
-(defgeneric resource-logic (object instance any)
-  (:documentation "I run the resource resource-logic for a given type"))
+(defgeneric resource-logic (object instance consumed?)
+  (:documentation "I run the resource resource-logic for a given type")
+  (:method ((object standard-object) (instance instance) consumed?)
+    (and (always-true object)
+         (if consumed?
+             (holds-on-use   object instance)
+             (holds-on-intro object instance)))))
+
+(defgeneric always-true (object)
+  (:documentation "I must always hold for the object to be considered valid"))
+
+(defgeneric holds-on-use (object instances)
+  (:documentation "The property that must always hold on the object being used")
+  (:method ((object standard-object) (instance instance))
+    (cl-rm.utils:subclass-responsibility object)))
+
+(defgeneric holds-on-intro (object instances)
+  (:documentation "The property that must always hold on the object being created")
+  (:method ((object standard-object) (instance instance))
+    (cl-rm.utils:subclass-responsibility object)))
 
 (defgeneric obj->resource (object)
   (:documentation "I turn an object into a resource"))

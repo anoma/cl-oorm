@@ -6,6 +6,9 @@
    :tag
 
    :resource-logic         ; this exists as the base predicate for now
+   :holds-on-use
+   :holds-on-intro
+   :always-true
    :kind
    :manual-kind
    :kind-balance
@@ -24,7 +27,7 @@
   (:documentation "I hold the environmental model for the compilation model over the RM")
   (:use #:common-lisp #:serapeum #:cl-rm.generics)
   (:export
- ;; Environmental manipulation functions
+   ;; Environmental manipulation functions
    :top-level-action :signed-action
    :emit-created :emit-consumed
 
