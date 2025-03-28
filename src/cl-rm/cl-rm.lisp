@@ -138,6 +138,10 @@
   (make-instance 'resource :data (list x)
                            :logic #'resource-logic
                            :label 'built-in-class))
+(defmethod obj->resource ((x string))
+  (make-instance 'resource :data (list x)
+                           :logic #'resource-logic
+                           :label 'built-in-class))
 
 (defmethod obj->resource ((r resource))
   r)
@@ -153,8 +157,8 @@
        (apply (gf object)
               (serapeum:take (num-args object) (consumed instance)))))
 
-(defmethod resource-logic ((object integer) (instance instance) any)
-  t)
+(defmethod resource-logic ((object integer) (instance instance) any) t)
+(defmethod resource-logic ((object string) (instance instance) any) t)
 
 ;;; #############################################################################
 ;;;                                    API                                      #
