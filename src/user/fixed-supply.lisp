@@ -59,6 +59,7 @@ for if we should create or consume"
   (some (lambda (finding)
           (and (eq (class-name-of finding) 'fixed-supply-intent)
                (eq (class-assurance finding) (class-name (class-of object)))
+               (= (quantity finding) (quantity object))
                (eq using? (should-create? finding))))
         (created instance)))
 
