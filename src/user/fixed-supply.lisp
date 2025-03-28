@@ -61,15 +61,14 @@ for if we should create or consume"
 (defmethod always-true ((object fixed-supply-intent)) t)
 (defmethod holds-on-intro ((object fixed-supply-intent) (instance instance)) t)
 (defmethod holds-on-use ((object fixed-supply-intent) (instance instance))
-  (true (find-if
-         (lambda (finding)
-           (and (eq (class-name-of finding)
-                    (class-assurance object))
-                (= (quantity finding)
-                   (quantity object))))
-         (if (should-create? object)
-             (created instance)
-             (consumed instance)))))
+  (some (lambda (finding)
+          (and (eq (class-name-of finding)
+                   (class-assurance object))
+               (= (quantity finding)
+                  (quantity object))))
+        (if (should-create? object)
+            (created instance)
+            (consumed instance))))
 
 (defmethod holds-on-use :around ((object fixed-supply-mixin) (instance instance))
   (and (call-next-method)
@@ -81,12 +80,11 @@ for if we should create or consume"
 (-> fixed-supply-holds (fixed-supply-mixin instance boolean) boolean)
 (defun fixed-supply-holds (object instance using?)
   (let* ((class (class-of object)))
-    (true (find-if
-           (lambda (object)
-             (and (eq (class-name-of object) 'fixed-supply-intent)
-                  (eq (class-assurance object) (class-name class))
-                  (eq using? (should-create? object))))
-           (created instance)))))
+    (some (lambda (object)
+            (and (eq (class-name-of object) 'fixed-supply-intent)
+                 (eq (class-assurance object) (class-name class))
+                 (eq using? (should-create? object))))
+          (created instance))))
 
 ;;; #############################################################################
 ;;;                                   API                                       #
