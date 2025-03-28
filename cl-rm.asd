@@ -23,7 +23,8 @@
                  (:file numbers)
                  (:file unique)
                  (:file fixed-supply)
-                 (:file ownership))))
+                 (:file ownership)
+                 (:file spacebucks))))
     :in-order-to ((asdf:test-op (asdf:test-op :cl-rm/test))))
 
 (asdf:defsystem :cl-rm/test
