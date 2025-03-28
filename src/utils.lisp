@@ -18,6 +18,11 @@
        (print-unreadable-object (obj stream :type t)
          (format stream "~2I~{~_~A~^ ~}" (to-list obj))))))
 
+(defun subclass-responsibility (obj)
+  "Denotes that the given method is the subclasses
+   responsibility. Inspired from Smalltalk"
+  (error "Subclass Responsibility for ~A" (class-name (class-of obj))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; API for Generic Traversal Protocol
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

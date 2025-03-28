@@ -6,6 +6,7 @@
    :symbol-to-keyword
    :symbol-to-bytes
    :define-generic-print
+   :subclass-responsibility
    ;; ###################################
    ;; Generic Data Processing Protocols #
    ;; ###################################
