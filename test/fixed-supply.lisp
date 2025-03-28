@@ -8,7 +8,9 @@
 (defclass only-fixed (fixed-supply-mixin) ())
 
 ;; We should be abstract but I'm testing directly against the mixin
-(defmethod resource-logic ((object only-fixed) (instance instance) consumed?) t)
+(defmethod always-true    ((object only-fixed)) t)
+(defmethod holds-on-use   ((object only-fixed) (instance instance)) t)
+(defmethod holds-on-intro ((object only-fixed) (instance instance)) t)
 
 (defun 1000-supply ()
   (make-instance 'only-fixed :supply-quantity 1000))

@@ -58,30 +58,35 @@ for if we should create or consume"
                          :class-assurance (class-name (class-of fixed-supply))
                          :should-create? create)))
 
-(defmethod resource-logic ((object fixed-supply-intent) (instance instance) consumed?)
-  (or (not consumed?)
-      (true (find-if
-             (lambda (finding)
-               (and (eq (class-name-of finding)
-                        (class-assurance object))
-                    (= (quantity finding)
-                       (quantity object))))
-             (if (should-create? object)
-                 (created instance)
-                 (consumed instance))))))
+(defmethod always-true ((object fixed-supply-intent)) t)
+(defmethod holds-on-intro ((object fixed-supply-intent) (instance instance)) t)
+(defmethod holds-on-use ((object fixed-supply-intent) (instance instance))
+  (true (find-if
+         (lambda (finding)
+           (and (eq (class-name-of finding)
+                    (class-assurance object))
+                (= (quantity finding)
+                   (quantity object))))
+         (if (should-create? object)
+             (created instance)
+             (consumed instance)))))
 
-;; This code is very low level sadly
-(defmethod resource-logic :around ((object fixed-supply-mixin) (instance instance) consumed?)
+(defmethod holds-on-use :around ((object fixed-supply-mixin) (instance instance))
+  (and (call-next-method)
+       (fixed-supply-holds object instance t)))
+(defmethod holds-on-intro :around ((object fixed-supply-mixin) (instance instance))
+  (and (call-next-method)
+       (fixed-supply-holds object instance nil)))
+
+(-> fixed-supply-holds (fixed-supply-mixin instance boolean) boolean)
+(defun fixed-supply-holds (object instance using?)
   (let* ((class (class-of object)))
-    (and (call-next-method)
-         (true (find-if
-                (lambda (object)
-                  (and (eq (class-name-of object) 'fixed-supply-intent)
-                       (eq (class-assurance object) (class-name class))
-                       (if consumed?
-                           (should-create? object)
-                           (not (should-create? object)))))
-                (created instance))))))
+    (true (find-if
+           (lambda (object)
+             (and (eq (class-name-of object) 'fixed-supply-intent)
+                  (eq (class-assurance object) (class-name class))
+                  (eq using? (should-create? object))))
+           (created instance)))))
 
 ;;; #############################################################################
 ;;;                                   API                                       #

@@ -86,7 +86,9 @@
              (holds-on-intro object instance)))))
 
 (defgeneric always-true (object)
-  (:documentation "I must always hold for the object to be considered valid"))
+  (:documentation "I must always hold for the object to be considered valid")
+  (:method ((object standard-object))
+    (cl-rm.utils:subclass-responsibility object)))
 
 (defgeneric holds-on-use (object instances)
   (:documentation "The property that must always hold on the object being used")
@@ -140,16 +142,16 @@
 (defmethod obj->resource ((r resource))
   r)
 
-(defmethod resource-logic ((object method-resource) (instance instance) consumed?)
-  (if consumed?
-      t
-      (cl-rm.utils:obj-equalp
+(defmethod always-true ((object method-resource)) t)
+(defmethod holds-on-use ((object method-resource) (instance instance)) t)
+(defmethod holds-on-intro ((object method-resource) (instance instance))
+  (cl-rm.utils:obj-equalp
        ;; We check the output is equal to the work
        (cadr (created instance))
        ;; We assume all inputs are stored next to each other at the start
        ;; of the consumed
        (apply (gf object)
-              (serapeum:take (num-args object) (consumed instance))))))
+              (serapeum:take (num-args object) (consumed instance)))))
 
 (defmethod resource-logic ((object integer) (instance instance) any)
   t)

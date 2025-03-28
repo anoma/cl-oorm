@@ -11,7 +11,9 @@
 (defclass only-owned (ownership-mixin)
   ((value :initarg :value :accessor value)))
 
-(defmethod resource-logic ((object only-owned) (instance instance) consumed?) t)
+(defmethod always-true    ((object only-owned)) t)
+(defmethod holds-on-use   ((object only-owned) (instance instance)) t)
+(defmethod holds-on-intro ((object only-owned) (instance instance)) t)
 
 (defun alice-1 ()
   (make-instance 'only-owned :value 1 :owner *alice-public*))

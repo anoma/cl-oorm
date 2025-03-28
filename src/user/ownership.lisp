@@ -21,15 +21,16 @@
            (ironclad:sign-message priv)
            (cl-rm.env:put-metadata env object :signature)))))
 
-(defmethod resource-logic :around ((object ownership-mixin) (instance instance) consumed?)
-  (let ((sig (fset:lookup (environment instance) :signature)))
-    (and (call-next-method)
-         (or (not consumed?)
-             (and sig
-                  (true (find-if (lambda (r)
-                                   (and (c2mop:subclassp (class-of r) 'method-resource)
-                                        (ironclad:verify-signature
-                                         (owner object)
-                                         (cl-rm.utils:symbol-to-bytes (gf r))
-                                         sig)))
-                                 (created instance))))))))
+(defmethod holds-on-use :around ((object ownership-mixin) (instance instance))
+  (and (call-next-method)
+       (let ((sig (fset:lookup (environment instance) :signature)))
+         (and sig
+              (true (find-if (lambda (r)
+                               (and (c2mop:subclassp (class-of r) 'method-resource)
+                                    (ironclad:verify-signature
+                                     (owner object)
+                                     (cl-rm.utils:symbol-to-bytes (gf r))
+                                     sig)))
+                             (created instance)))))))
+(defmethod holds-on-intro :around ((object ownership-mixin) (instance instance))
+  (call-next-method))
