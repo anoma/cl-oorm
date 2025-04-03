@@ -27,8 +27,9 @@
 
 (define-generic-print integer-obj)
 
-(defmethod resource-logic ((object integer-obj) (instance instance) any)
-  ;; We can ignore the instance as our constraint is very simple
+(defmethod holds-on-use   ((object integer-obj) (instance instance)) t)
+(defmethod holds-on-intro ((object integer-obj) (instance instance)) t)
+(defmethod always-true    ((object integer-obj))
   (integerp (data object)))
 
 
