@@ -28,7 +28,7 @@
     :in-order-to ((asdf:test-op (asdf:test-op :cl-rm/test))))
 
 (asdf:defsystem :cl-rm/test
-  :depends-on (:cl-rm :parachute)
+  :depends-on (:cl-rm :parachute :hyperdoc)
   :description "Testing Cl OO"
   :pathname "test/"
   :serial t
