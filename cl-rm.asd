@@ -42,3 +42,11 @@
    (:file ownership))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :cl-rm.test :run-tests-error)))
+
+(asdf:defsystem :cl-rm/moldable
+  :depends-on (:cl-rm/test :clog-moldable-inspector :hyperdoc/explorer)
+  :pathname "view/"
+  :serial t
+  :components
+  ((:file package)
+   (:file views)))
