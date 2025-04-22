@@ -49,4 +49,5 @@
   :serial t
   :components
   ((:file package)
+   (:file test)
    (:file views)))
