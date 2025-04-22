@@ -5,6 +5,30 @@ This code demonstrates compiling CL objects to resources.
 This code is not intended to be specs compliant, but strategies to
 make it specs compliant however are known
 
+** Dependencies
+
+1. Setup quicklisp
+2. Run the following to add ultra-lisp into the dependencies
+   #+begin_src lisp
+     (ql-dist:install-dist "http://dist.ultralisp.org/" :prompt nil)
+   #+end_src
+3. Load the project from loading the asdf file and running:
+   #+begin_src lisp
+     (ql:quickload :cl-rm/moldable)
+     (asdf:test-system :cl-rm)
+   #+end_src
+
+** Viewing examples
+
+A good way to view examples is by running the following:
+#+begin_src lisp
+  (ql:quickload :cl-rm/moldable)
+  (in-package :cl-rm.test)
+  (clog-inspect (asdf:find-system 'cl-rm/test))
+#+end_src
+
+Then clicking the test files
+
 ** Known Limitations
 This mode is great because of mapping CLOS Objects to Resources,
 however this model is also limited because we are tied using CL here
