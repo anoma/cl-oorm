@@ -12,20 +12,20 @@
 (defmethod holds-on-use   ((object only-fixed) (instance instance)) t)
 (defmethod holds-on-intro ((object only-fixed) (instance instance)) t)
 
-(defun 1000-supply ()
+(defexample 1000-supply
   (make-instance 'only-fixed :supply-quantity 1000))
 
-(defun 1000-intent ()
+(defexample 1000-intent
   "I am the intent that gets created when creating a fixed supply intent"
   (make-instance 'fixed-supply-intent
                  :should-create? nil
                  :quantity 1000
                  :class-assurance 'only-fixed))
 
-(defun fixed-supply-transaction ()
+(defexample fixed-supply-transaction
   (transact (quantity (1000-supply))))
 
-(defun fixed-supply-all-balanced ()
+(defexample fixed-supply-all-balanced
   "We abuse transact output as being consumed"
   (let ((supply (1000-supply)))
     (transact (drop-all
@@ -33,7 +33,7 @@
                (cl-rm.user::make-fixed-supply-intent supply t)
                (cl-rm.user::make-fixed-supply-intent supply nil)))))
 
-(defun fixed-supply-isnt-balanced ()
+(defexample fixed-supply-isnt-balanced
   "We abuse transact output as being consumed"
   (let ((supply (1000-supply)))
     (transact (drop-all

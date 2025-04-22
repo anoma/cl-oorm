@@ -3,10 +3,10 @@
 (define-test cl-rm-numbers
   :parent cl-rm-test-suite)
 
-(defun transacted-add ()
+(defexample transacted-add
   (transact (add (counted 3) (counted 5))))
 
-(defun invalid-number ()
+(defexample invalid-number
   (let ((obj (obj->resource (counted 4))))
     (setf (data obj) (list "hi"))
     (resource->obj obj)))

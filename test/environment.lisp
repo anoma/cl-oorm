@@ -3,7 +3,7 @@
 (define-test cl-rm-environment
   :parent cl-rm-test-suite)
 
-(defun single-environment ()
+(defexample single-environment
   (let ((env (cl-rm.env:empty-environment)))
     (cl-rm.env:put-metadata env 1 :signature (list 0 0))
     env))

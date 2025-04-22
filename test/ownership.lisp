@@ -15,19 +15,19 @@
 (defmethod holds-on-use   ((object only-owned) (instance instance)) t)
 (defmethod holds-on-intro ((object only-owned) (instance instance)) t)
 
-(defun alice-1 ()
+(defexample alice-1
   (make-instance 'only-owned :value 1 :owner *alice-public*))
 
-(defun signed-1 ()
+(defexample signed-1
   (let ((cl-rm.env:*environment* (cl-rm.env:empty-environment :operation 'foo)))
     (cl-rm.env:put-private-key cl-rm.env:*environment* *alice-key*)
     (cl-rm.user:try-signing (alice-1))
     cl-rm.env:*environment*))
 
-(defun Properly-signed-away ()
+(defexample Properly-signed-away
   (transact (drop-all (alice-1)) :keys (list *alice-key*)))
 
-(defun improperly-signed-away ()
+(defexample improperly-signed-away
   (transact (drop-all (alice-1)) :keys (list *bob-key*)))
 
 
