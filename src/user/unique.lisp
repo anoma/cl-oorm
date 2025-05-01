@@ -21,16 +21,6 @@ Every-time I am created within a transaction, I will be remembered.
 Further I offer an API on how to `use' myself along with related data
 that must also be included in the environment."))
 
-(deftype emitted-kind ()
-  `(member :create :consumed))
-
-(defclass emitter ()
-  ((emitted :initarg :emitted :accessor emitted)
-   (kind-of :initarg :kind-of :accessor kind-of :type emitted-kind :initform :create
-            :documentation "I can either be `:create' or `:use'"))
-  (:documentation "I provide a decent entry-point for making an emitted object.
-To make your own just implement `emit'"))
-
 ;;; #############################################################################
 ;;;                                Public API                                   #
 ;;; #############################################################################
@@ -43,30 +33,6 @@ I am important to call whenever an operation uses the unique data."))
 (defgeneric create (unique)
   (:documentation "Emits the unique object being used into the transaction"))
 
-;; We need to keep these methods though
-(defgeneric related-use (unique)
-  (:documentation "I list extra objects that need to be put into the transaction space called by `use'.
-
-Please return a list of objects that can be called with `emit'. It is
-customary to wrap your object in `emitter' if you want the default behaviour.")
-  (:method ((u unique-mixin)) nil))
-
-(defgeneric related-create (unique)
-  (:documentation "I list extra objects that need to be put into transaction space called by `create'
-
-Please return a list of objects that can be called with `emit'. It is
-customary to wrap your object in `emitter' if you want the default behaviour.")
-  (:method ((u unique-mixin)) nil))
-
-(defgeneric emit (object)
-  (:documentation "I emit the object into the environment"))
-
-(defun emit-create (object)
-  (make-instance 'emitter :emitted object))
-
-(defun emit-consume (object)
-  (make-instance 'emitter :emitted object :kind-of :consumed))
-
 ;;; #############################################################################
 ;;;                                 Instances                                   #
 ;;; #############################################################################
@@ -78,11 +44,6 @@ customary to wrap your object in `emitter' if you want the default behaviour.")
 (defmethod create ((object unique-mixin))
   (cl-rm.env:emit-created object)
   (mapcar #'emit (related-create object)))
-
-(defmethod emit ((object emitter))
-  (ecase-of emitted-kind (kind-of object)
-    (:create   (cl-rm.env:emit-created (emitted object)))
-    (:consumed (cl-rm.env:emit-consumed (emitted object)))))
 
 (defmethod cl-rm:delete :after ((object unique-mixin))
   (use object))
@@ -99,7 +60,3 @@ customary to wrap your object in `emitter' if you want the default behaviour.")
 (defmethod copy-instance :after ((object unique-mixin)
                                  &rest initargs &key &allow-other-keys)
   (apply #'initialize-instance object initargs))
-
-(defmethod print-object ((obj emitter) stream)
-  (print-unreadable-object (obj stream :type nil)
-    (format stream "~A ~A" (kind-of obj) (emitted obj))))

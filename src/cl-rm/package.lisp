@@ -21,7 +21,9 @@
    :resource->obj
    ;; Environmental
    :environment
-   :operation))
+   :operation
+   ;; Relationship API
+   :related-use :related-create :emit))
 
 (defpackage #:cl-rm.env
   (:documentation "I hold the environmental model for the compilation model over the RM")
@@ -41,11 +43,16 @@
    ;; Private key helper functions
    :lookup-private-key :put-private-key))
 
+(defpackage #:cl-rm.relation
+  (:documentation "I hold relation information between various objects")
+  (:use #:common-lisp #:serapeum #:cl-rm.generics)
+  (:export :emit-consume :emit-create))
+
 (uiop:define-package #:cl-rm
   (:documentation "A resource machine implementation and exploration")
   (:shadow :@ :take :delete)
   (:use #:common-lisp #:serapeum #:ironclad)
-  (:use-reexport #:cl-rm.generics)
+  (:use-reexport #:cl-rm.generics #:cl-rm.relation)
   (:export
    ;; Types
    :resource
