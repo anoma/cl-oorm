@@ -14,9 +14,14 @@
    ;; Ownership API
    :ownership-mixin :owner
    :try-signing
+
+   ;; Unique
+   :unique-mixin
+   :create :use :related-use :related-create
+
    ;; Fixed-Supply API
    :fixed-supply-mixin :quantity
    :fixed-supply-intent :class-assurance :should-create?
-   :split :use)
+   :split)
   (:use #:cl-rm.utils #:cl-rm
         #:common-lisp #:serapeum #:ironclad))
