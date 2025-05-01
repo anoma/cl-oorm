@@ -19,6 +19,9 @@
    :unique-mixin
    :create :use :related-use :related-create
 
+   :emitter :emitted-kind :emit
+   :emit-create :emit-consume
+
    ;; Fixed-Supply API
    :fixed-supply-mixin :quantity
    :fixed-supply-intent :class-assurance :should-create?

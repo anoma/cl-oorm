@@ -23,10 +23,10 @@ In particular I assure that x number of tokens are created or burned"))
 (cl-rm.utils:define-generic-print fixed-supply-intent)
 
 (defmethod related-create ((fixed fixed-supply-mixin))
-  (cl-rm.env:emit-created (make-fixed-supply-intent fixed nil)))
+  (list (emit-create (make-fixed-supply-intent fixed nil))))
 
 (defmethod related-use ((fixed fixed-supply-mixin))
-  (cl-rm.env:emit-created (make-fixed-supply-intent fixed t)))
+  (list (emit-create (make-fixed-supply-intent fixed t))))
 
 (-> make-fixed-supply-intent (fixed-supply-mixin boolean) fixed-supply-intent)
 (defun make-fixed-supply-intent (fixed-supply create)
