@@ -76,20 +76,21 @@ to any resources"
   (lookup-metadata env pub :private))
 
 ;; could be tail recursive...
-(-> compute-all-related (compilation-environment) compilation-environment)
+;; (-> compute-all-related (compilation-environment) compilation-environment)
 (defun compute-all-related (env)
-  (let ((*environment* (cl-rm.utils:copy-instance env :consumed nil :created nil))
+  (let ((*environment* (make-instance 'compilation-environment :operation (operation env) :environment (environment env)))
         (related       (related-objects env)))
     (if (not related)
         env
         (progn
-          (mapcar #'emit (related-objects env))
+          (break "HELP ~A ~A" *environment* related)
+          (mapcar #'emit related)
           ;; Slower than it needs to be, we just need to compose the two fields really
           (union-envs env
                       (compute-all-related (remove-duplicate-resources *environment*)))))))
 
-(-> compute-all-related-with (compilation-environment &key (:arguments list) (:results list))
-    compilation-environment)
+;; (-> compute-all-related-with (compilation-environment &key (:arguments list) (:results list))
+;;     compilation-environment)
 (defun compute-all-related-with (env &key arguments results)
   (compute-all-related
    ;; We are filtering out resources that are in the inputs that
@@ -108,7 +109,8 @@ to any resources"
                                   :created (append results
                                                    (remove-if (lambda (x) (member x results))
                                                               (created env))))))
-(-> to-compliance-unit (compilation-environment) cl-rm:compliance-unit)
+
+;; (-> to-compliance-unit (compilation-environment) cl-rm:compliance-unit)
 (defun to-compliance-unit (env)
   (let ((consumed (mapcar #'obj->resource (consumed env)))
         (created  (mapcar #'obj->resource (created env))))

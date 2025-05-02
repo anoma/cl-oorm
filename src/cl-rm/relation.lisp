@@ -47,6 +47,7 @@ customary to wrap your object in `emitter' if you want the default behaviour.")
 ;;; #############################################################################
 
 (defmethod emit ((object emitter))
+  (break "EMIΤ TIME")
   (ecase-of emitted-kind (kind-of object)
     (:create   (cl-rm.env:emit-created (emitted object)))
     (:consumed (cl-rm.env:emit-consumed (emitted object)))))
