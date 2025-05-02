@@ -38,12 +38,10 @@ I am important to call whenever an operation uses the unique data."))
 ;;; #############################################################################
 
 (defmethod use ((object unique-mixin))
-  (cl-rm.env:emit-consumed object)
-  (mapcar #'emit (related-use object)))
+  (cl-rm.env:emit-consumed object))
 
 (defmethod create ((object unique-mixin))
-  (cl-rm.env:emit-created object)
-  (mapcar #'emit (related-create object)))
+  (cl-rm.env:emit-created object))
 
 (defmethod cl-rm:delete :after ((object unique-mixin))
   (use object))

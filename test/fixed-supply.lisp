@@ -49,7 +49,8 @@
   :parent cl-rm-fixed-supply
   (let* ((cl-rm.env:*environment* (cl-rm.env:empty-environment))
          (supply (1000-supply))
-         (created (cl-rm:created cl-rm.env:*environment*)))
+         (created (cl-rm:created (cl-rm.env:compute-all-related
+                                  cl-rm.env:*environment*))))
     (is = (length created) 2)
     (true (find-if (lambda (o)
                      (cl-rm.utils:obj-equalp o (1000-intent)))

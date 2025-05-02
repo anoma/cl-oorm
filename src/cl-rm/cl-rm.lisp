@@ -251,44 +251,8 @@
          ;; just using the car isn't the most elegant
          (function (make-instance 'method-resource
                                   :gf (car expression)
-                                  :num-args (length consumed)))
-         (results  (list function result))
-         ;; We are filtering out resources that are in the inputs that
-         ;; emit themselves. This isn't full proof as we really should
-         ;; use remove-duplicates, however this has the issue of
-         ;; removing (+ 1 1).... I think I need to implement a better
-         ;; system for function application to better see what
-         ;; arguments it takes
-         ;;
-         ;; A more robust system is to mark what slot I care about and
-         ;; what positions do I need to apply this in, that should
-         ;; work generically
-         (full-consumed
-           (mapcar #'obj->resource
-                   (append consumed
-                           (remove-if (lambda (x)
-                                        (member x consumed))
-                                      (consumed cl-rm.env:*environment*)))))
-         (full-created
-           (mapcar #'obj->resource
-                   (append results
-                           (remove-if (lambda (x) (member x results))
-                                      (created cl-rm.env:*environment*))))))
-    (labels ((create-consumed (object)
-               (make-instance 'instance
-                              :created full-created
-                              :consumed full-consumed
-                              :consumed-p t
-                              ;; modeling of tag not online
-                              :tag object
-                              :environment (cl-rm.env:lookup-metadata-table
-                                            cl-rm.env:*environment*
-                                            object)))
-             (create-output (object)
-               (let ((obj (create-consumed object)))
-                 (setf (consumed-p obj) nil)
-                 obj)))
-      (make-compliance-unit
-       ;; Order is: function, output, created, inputs, consumed
-       (append (mapcar #'create-output full-created)
-               (mapcar #'create-consumed full-consumed))))))
+                                  :num-args (length consumed))))
+    (cl-rm.env:to-compliance-unit
+     (cl-rm.env:compute-all-related-with cl-rm.env:*environment*
+                                         :arguments consumed
+                                         :results (list function result)))))
