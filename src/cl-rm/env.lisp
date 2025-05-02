@@ -75,6 +75,57 @@ to any resources"
 to any resources"
   (lookup-metadata env pub :private))
 
+;; could be tail recursive...
+(-> compute-all-related (compilation-environment) compilation-environment)
+(defun compute-all-related (env)
+  (let ((*environment* (cl-rm.utils:copy-instance env :consumed nil :created nil))
+        (related       (related-objects env)))
+    (if (not related)
+        env
+        (progn
+          (mapcar #'emit (related-objects env))
+          ;; Slower than it needs to be, we just need to compose the two fields really
+          (union-envs env
+                      (compute-all-related (remove-duplicate-resources *environment*)))))))
+
+(-> compute-all-related-with (compilation-environment &key (:arguments list) (:results list))
+    compilation-environment)
+(defun compute-all-related-with (env &key arguments results)
+  (compute-all-related
+   ;; We are filtering out resources that are in the inputs that
+   ;; emit themselves. This isn't full proof as we really should
+   ;; use remove-duplicates, however this has the issue of
+   ;; removing (+ 1 1).... I think I need to implement a better
+   ;; system for function application to better see what
+   ;; arguments it takes
+   ;;
+   ;; A more robust system is to mark what slot I care about and
+   ;; what positions do I need to apply this in, that should
+   ;; work generically
+   (cl-rm.utils:copy-instance env :consumed (append arguments
+                                                    (remove-if (lambda (x) (member x arguments))
+                                                               (consumed env)))
+                                  :created (append results
+                                                   (remove-if (lambda (x) (member x results))
+                                                              (created env))))))
+(-> to-compliance-unit (compilation-environment) cl-rm:compliance-unit)
+(defun to-compliance-unit (env)
+  (let ((consumed (mapcar #'obj->resource (consumed env)))
+        (created  (mapcar #'obj->resource (created env))))
+    (labels ((create (object tag)
+               (make-instance 'cl-rm:instance
+                              :created created
+                              :consumed consumed
+                              :consumed-p tag
+                              ;; modeling of tag not online
+                              :tag object
+                              :environment (cl-rm.env:lookup-metadata-table
+                                            cl-rm.env:*environment*
+                                            object))))
+      (cl-rm:make-compliance-unit
+       ;; Order is: function, output, created, inputs, consumed
+       (append (mapcar (lambda (c) (create c nil)) created)
+               (mapcar (lambda (c) (create c t)) consumed))))))
 ;;; #############################################################################
 ;;;                                  Global                                     #
 ;;; #############################################################################
@@ -92,3 +143,26 @@ to any resources"
   (push object (consumed *environment*)))
 
 
+;;; #############################################################################
+;;;                                  Helpers                                    #
+;;; #############################################################################
+
+(-> related-objects (compilation-environment) list)
+(defun related-objects (env)
+  (append (mapcan #'related-use (consumed env))
+          (mapcan #'related-create (created env))))
+
+(-> remove-duplicate-resources (compilation-environment) compilation-environment)
+(defun remove-duplicate-resources (env)
+  (cl-rm.utils:copy-instance env :consumed (remove-duplicates (consumed env))
+                                 :created (remove-duplicates (created env))))
+
+(-> union-envs (compilation-environment compilation-environment) compilation-environment)
+(defun union-envs (env1 env2)
+  (make-instance 'compilation-environment
+                 :operation (operation env1)
+                 :environment (fset:map-union (environment env1)
+                                              (environment env2)
+                                              (lambda (_ y) (declare (ignorable _)) y))
+                 :created  (append (created env1) (created env2))
+                 :consumed (append (consumed env1) (consumed env2))))

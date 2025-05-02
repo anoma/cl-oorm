@@ -41,7 +41,10 @@
    :put-metadata
    :lookup-metadata-table :lookup-metadata
    ;; Private key helper functions
-   :lookup-private-key :put-private-key))
+   :lookup-private-key :put-private-key
+
+   :compute-all-related-with :compute-all-related
+   :to-compliance-unit))
 
 (defpackage #:cl-rm.relation
   (:documentation "I hold relation information between various objects")
